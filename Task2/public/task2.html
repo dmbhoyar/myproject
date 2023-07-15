@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Task Management System</title>
+  <style>
+     body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .task {
+      background-color: #f2f2f2;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .task h2 {
+      margin-top: 0;
+    }
+
+    .task button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .task button:hover {
+      background-color: #45a049;
+    }
+
+    .task button:active {
+      background-color: #3e8e41;
+    }
+    
+        .form-container {
+      margin-bottom: 20px;
+    }
+
+    .form-container input,
+    .form-container select {
+      margin-bottom: 10px;
+    }
+
+    .form-container button {
+      background-color: #008CBA;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .form-container button:hover {
+      background-color: #006080;
+    }
+
+    .form-container button:active {
+      background-color: #004d66;
+    }
+  </style>
+</head>
+<body>
+  <h1>Task Management System</h1>
+  <div class="form-container">
+    <h2>Add Task</h2>
+    <form id="taskForm">
+      <label for="taskName">Task Name:</label>
+      <input type="text" id="taskName" required>
+
+      <label for="deadline">Deadline:</label>
+      <input type="date" id="deadline" required>
+
+      <label for="priority">Priority:</label>
+      <select id="priority" required>
+        <option value="High">High</option>
+        <option value="Medium">Medium</option>
+        <option value="Low">Low</option>
+      </select>
+
+      <label for="label">Label:</label>
+      <input type="text" id="label" required>
+
+      <button type="submit">Add Task</button>
+    </form>
+  </div>
+
+  <div id="taskList">
+    
+  </div>
+
+  <script>
+    
+    var tasks = [
+      {
+        id: 1,
+        taskName: 'Create wireframes and mockups for the website\'s main pages.',
+        deadline: '2023-07-30',
+        priority: 'High',
+        label: 'Design'
+      },
+      {
+        id: 2,
+        taskName: 'Set up the basic HTML/CSS structure for the website.',
+        deadline: '2023-08-05',
+        priority: 'Medium',
+        label: 'Development'
+      },
+      
+    ];
+
+ 
+    function generateTaskElement(task) {
+      var taskElement = document.createElement('div');
+      taskElement.className = 'task';
+      taskElement.innerHTML = `
+        <h2>${task.taskName}</h2>
+        <p><strong>Deadline:</strong> ${task.deadline}</p>
+        <p><strong>Priority:</strong> ${task.priority}</p>
+        <p><strong>Label:</strong> ${task.label}</p>
+      `;
+      return taskElement;
+    }
+
+  
+    function renderTasks() {
+      var taskList = document.getElementById('taskList');
+      taskList.innerHTML = '';
+
+      for (var i = 0; i < tasks.length; i++) {
+        var task = tasks[i];
+        var taskElement = generateTaskElement(task);
+        taskList.appendChild(taskElement);
+      }
+    }
+
+  
+    renderTasks();
+    function prioritizeTasks() {
+        tasks.sort(function(a, b) {
+          
+          var priorityOrder = { High: 3, Medium: 2, Low: 1 };
+          var priorityA = priorityOrder[a.priority];
+          var priorityB = priorityOrder[b.priority];
+          if (priorityA !== priorityB) {
+            return priorityB - priorityA;
+          }
+
+         
+          var deadlineA = new Date(a.deadline);
+          var deadlineB = new Date(b.deadline);
+          return deadlineA - deadlineB;
+        });
+      }
+
+    
+      function updateProgress() {
+        var completedTasks = tasks.filter(function(task) {
+      
+          return task.completed;
+        });
+        var totalTasks = tasks.length;
+        var completionPercentage = (completedTasks.length / totalTasks) * 100;
+
+    
+      }
+
+ 
+      function render() {
+        prioritizeTasks();
+        renderTasks();
+        updateProgress();
+      }
+
+   
+      tasks[0].completed = true;
+      render();
+      function toggleTaskCompletion(taskId) {
+          var task = tasks.find(function(task) {
+            return task.id === taskId;
+          });
+
+          if (task) {
+            task.completed = !task.completed;
+            render();
+          }
+        }
+
+       
+        function generateTaskElement(task) {
+          var taskElement = document.createElement('div');
+          taskElement.className = 'task';
+          taskElement.innerHTML = `
+            <h2>${task.taskName}</h2>
+            <p><strong>Deadline:</strong> ${task.deadline}</p>
+            <p><strong>Priority:</strong> ${task.priority}</p>
+            <p><strong>Label:</strong> ${task.label}</p>
+            <button onclick="toggleTaskCompletion(${task.id})">
+              ${task.completed ? 'Mark Incomplete' : 'Mark Complete'}
+            </button>
+          `;
+          return taskElement;
+        }
+
+       
+        function render() {
+          prioritizeTasks();
+          renderTasks();
+          updateProgress();
+        }
+
+
+        tasks[0].completed = true;
+        render();
+        function handleFormSubmit(event) {
+            event.preventDefault();
+
+            var taskNameInput = document.getElementById('taskName');
+            var deadlineInput = document.getElementById('deadline');
+            var priorityInput = document.getElementById('priority');
+            var labelInput = document.getElementById('label');
+
+            var newTask = {
+              id: tasks.length + 1, 
+              taskName: taskNameInput.value,
+              deadline: deadlineInput.value,
+              priority: priorityInput.value,
+              label: labelInput.value,
+              completed: false
+            };
+
+            tasks.push(newTask);
+            render();
+
+       
+            taskNameInput.value = '';
+            deadlineInput.value = '';
+            priorityInput.value = 'High';
+            labelInput.value = '';
+          }
+
+        
+          var taskForm = document.getElementById('taskForm');
+          taskForm.addEventListener('submit', handleFormSubmit);
+
+  </script>
+</body>
+</html>
+
